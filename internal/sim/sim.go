@@ -153,15 +153,28 @@ func (s *Simulator) runOne(rng RNG) (replicationResult, float64, error) {
 			order++
 		}
 	}
-	routeFrom := func(source string) (string, bool) {
+	routeFrom := func(source string) (target string, ok bool) {
 		edges := s.outgoing(source)
 		if len(edges) == 0 {
-			return "", false
+			return "", false // no edges => exit
 		}
 		if rng.Used() >= limit {
 			return "", false
 		}
+
+		// Draw and compare against the total sum; remainder => exit.
 		u := rng.Next()
+		total := 0.0
+		for _, e := range edges {
+			total += e.Probability
+		}
+
+		// If u falls in the remainder (1 - total), job exits.
+		if u > total {
+			return "", false
+		}
+
+		// Otherwise pick by cumulative probability.
 		acc := 0.0
 		for _, e := range edges {
 			acc += e.Probability
@@ -169,7 +182,8 @@ func (s *Simulator) runOne(rng RNG) (replicationResult, float64, error) {
 				return e.Target, true
 			}
 		}
-		return edges[len(edges)-1].Target, true
+		// Numerical safety: if we get here due to tiny rounding, treat as exit.
+		return "", false
 	}
 
 	for pq.Len() > 0 && rng.Used() < limit {

@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"math"
 	"os"
 
 	yaml "gopkg.in/yaml.v3"
@@ -71,10 +70,13 @@ func validate(c *Config) error {
 		}
 		bySrc[e.Source] += e.Probability
 	}
+	// Allow sum <= 1.0 (remainder means implicit exit). Forbid sum > 1.0.
+	const eps = 1e-9
 	for src, sum := range bySrc {
-		if math.Abs(sum-1.0) > 1e-9 {
-			return fmt.Errorf("outgoing probabilities from %q must sum to 1.0 (got %.12f)", src, sum)
+		if sum > 1.0+eps {
+			return fmt.Errorf("outgoing probabilities from %q exceed 1.0 (got %.12f)", src, sum)
 		}
+		// If sum < 1.0, remainder (1-sum) is implicit exit; that's OK.
 	}
 
 	if len(c.Seeds) > 0 && c.RndNumbersPerSeed <= 0 {

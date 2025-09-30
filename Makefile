@@ -1,5 +1,5 @@
 # Go parameters
-APP_NAME = sim
+APP_NAME = sim2
 BIN_DIR = ./bin
 MAIN_PKG = ./cmd/sim
 
