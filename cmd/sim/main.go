@@ -6,24 +6,38 @@ import (
 	"log"
 
 	"github.com/leonardolforner/topologySimulator/internal/config"
+	"github.com/leonardolforner/topologySimulator/internal/sim"
 )
 
 func main() {
-	path := flag.String("config", "topology.yaml", "YAML file")
+	cfgPath := flag.String("config", "topology.yaml", "YAML contract file")
+	maxDraws := flag.Int("max-rands", 100000, "Stop when this many random draws are consumed (per replication)")
 	flag.Parse()
 
-	cfg, err := config.Load(*path)
+	cfg, err := config.Load(*cfgPath)
 	if err != nil {
-		log.Fatalf("load: %v", err)
+		log.Fatalf("load config: %v", err)
 	}
 
-	fmt.Println("Queues loaded:")
-	for name, q := range cfg.Queues {
-		capStr := "∞"
-		if q.Capacity != nil {
-			capStr = fmt.Sprint(*q.Capacity)
-		}
-		fmt.Printf("- %s: servers=%d cap=%s svc=[%.1f..%.1f]\n",
-			name, q.Servers, capStr, q.MinService, q.MaxService)
+	fmt.Println("=========================================================")
+	fmt.Println("============   QUEUEING NETWORK SIMULATOR   =============")
+	fmt.Println("======================     Go port    ===================")
+	fmt.Println("=========================================================")
+
+	engine, err := sim.NewSimulator(cfg, sim.Options{MaxRandomDraws: *maxDraws})
+	if err != nil {
+		log.Fatalf("sim init: %v", err)
 	}
+
+	reps, avg, err := engine.Run()
+	if err != nil {
+		log.Fatalf("run: %v", err)
+	}
+
+	fmt.Println("=========================================================")
+	fmt.Println("=================    END OF SIMULATION   ================")
+	fmt.Println("=========================================================")
+
+	ag := sim.AggregateResults(cfg, reps, avg)
+	sim.PrintReport(cfg, ag)
 }
