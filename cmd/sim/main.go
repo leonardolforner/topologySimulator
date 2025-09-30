@@ -1,11 +1,11 @@
-package sim
+package main
 
 import (
 	"flag"
 	"fmt"
 	"log"
 
-	"leonardolforner/topologySimulator/topologySimulator/internal/config"
+	"github.com/leonardolforner/topologySimulator/internal/config"
 )
 
 func main() {
