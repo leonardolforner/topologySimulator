@@ -45,7 +45,7 @@ func AggregateResults(cfg *config.Config, reps []replicationResult, avg float64)
 func PrintReport(cfg *config.Config, ag Aggregate) {
 	fmt.Println()
 	fmt.Println("=========================================================")
-	fmt.Println("======================    REPORT   ======================")
+	fmt.Println("                 SIMULATION REPORT")
 	fmt.Println("=========================================================")
 
 	names := make([]string, 0, len(cfg.Queues))
@@ -56,26 +56,29 @@ func PrintReport(cfg *config.Config, ag Aggregate) {
 
 	for _, name := range names {
 		q := cfg.Queues[name]
+
+		// Header
+		fmt.Println("\n---------------------------------------------------------")
 		if q.Capacity == nil {
-			fmt.Printf("*********************************************************\nQueue:   %s (G/G/%d)\n", name, q.Servers)
+			fmt.Printf("Queue %s  |  G/G/%d\n", name, q.Servers)
 		} else {
-			fmt.Printf("*********************************************************\nQueue:   %s (G/G/%d/%d)\n", name, q.Servers, *q.Capacity)
+			fmt.Printf("Queue %s  |  G/G/%d/%d\n", name, q.Servers, *q.Capacity)
 		}
 		if q.MinArrival != nil && q.MaxArrival != nil {
 			if _, ok := cfg.Arrivals[name]; ok {
-				fmt.Printf("Arrival: %.1f ... %.1f\n", *q.MinArrival, *q.MaxArrival)
+				fmt.Printf("  Arrival distribution: [%.1f, %.1f]\n", *q.MinArrival, *q.MaxArrival)
 			}
 		}
-		fmt.Printf("Service: %.1f ... %.1f\n", q.MinService, q.MaxService)
-		fmt.Println("*********************************************************")
-		fmt.Println("   State               Time               Probability")
+		fmt.Printf("  Service distribution: [%.1f, %.1f]\n", q.MinService, q.MaxService)
 
+		// States
+		fmt.Println("  States:")
+		fmt.Printf("    %-8s %-18s %-12s\n", "N", "Time", "Probability")
 		tb := ag.TimeByQueue[name]
 		var total float64
 		for _, t := range tb {
 			total += t
 		}
-
 		maxN := 0
 		for n := range tb {
 			if n > maxN {
@@ -88,12 +91,15 @@ func PrintReport(cfg *config.Config, ag Aggregate) {
 			if total > 0 {
 				p = 100.0 * t / total
 			}
-			fmt.Printf("%6d %18.4f %21.2f%%\n", n, t, p)
+			fmt.Printf("    %-8d %-18.4f %6.2f%%\n", n, t, p)
 		}
-		fmt.Printf("\nNumber of losses: %d\n\n", ag.Losses[name])
+
+		// Losses
+		fmt.Printf("  Losses: %d\n", ag.Losses[name])
 	}
 
-	fmt.Println("=========================================================")
-	fmt.Printf("Simulation average time: %.4f\n", ag.AvgSimTime)
+	fmt.Println("\n=========================================================")
+	fmt.Printf("Replications run: %d\n", ag.Reps)
+	fmt.Printf("Average simulation time: %.4f\n", ag.AvgSimTime)
 	fmt.Println("=========================================================")
 }

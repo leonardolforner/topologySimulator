@@ -21,7 +21,7 @@ func main() {
 
 	fmt.Println("=========================================================")
 	fmt.Println("============   QUEUEING NETWORK SIMULATOR   =============")
-	fmt.Println("======================     Go port    ===================")
+	fmt.Println("==================     Leonardo Forner    ===============")
 	fmt.Println("=========================================================")
 
 	engine, err := sim.NewSimulator(cfg, sim.Options{MaxRandomDraws: *maxDraws})
