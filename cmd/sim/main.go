@@ -22,6 +22,8 @@ func main() {
 	fmt.Println("=========================================================")
 	fmt.Println("============   QUEUEING NETWORK SIMULATOR   =============")
 	fmt.Println("==================     Leonardo Forner    ===============")
+	fmt.Println("==================     Pedro Semensato    ===============")
+	fmt.Println("=================     Jaoão Pedro Feijó    ==============")
 	fmt.Println("=========================================================")
 
 	engine, err := sim.NewSimulator(cfg, sim.Options{MaxRandomDraws: *maxDraws})
