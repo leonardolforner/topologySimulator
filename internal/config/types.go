@@ -5,7 +5,7 @@ type Config struct {
 	Queues            map[string]Queue   `yaml:"queues"`
 	Network           []Edge             `yaml:"network"`
 	RndNumbers        []float64          `yaml:"rndnumbers"`
-	RndNumbersPerSeed int                `yaml:"rndnumbersperseed"`
+	RndNumbersPerSeed int                `yaml:"rndnumbersPerSeed"`
 	Seeds             []int64            `yaml:"seeds"`
 }
 
