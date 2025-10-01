@@ -1,5 +1,5 @@
 # topologySimulator
-simulador para a disciplina de Simulação e métoods analíticos da PUCRS, alunos: Leonardo Forner
+simulador para a disciplina de Simulação e métoods analíticos da PUCRS, alunos: Leonardo Forner, Pedro Semensato
 
 ## Before running
 before being able to build this project, it is needed that you install golang into your system
